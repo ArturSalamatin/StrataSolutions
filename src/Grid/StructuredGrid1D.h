@@ -4,12 +4,12 @@
 #include <algorithm>
 #include <cassert>
 
+#include "Defines.h"
+
 namespace EqSolver
 {
     namespace Grid
     {
-        using float_t = double;
-
         struct StructuredGrid1D
         {
             public:
