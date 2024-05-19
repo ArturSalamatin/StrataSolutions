@@ -9,6 +9,9 @@ project(EqSolver)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+add_subdirectory(googletest)
+
+
 
 add_subdirectory(src)
 
