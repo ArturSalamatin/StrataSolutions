@@ -10,7 +10,7 @@ namespace EqSolver
 {
     namespace Grid
     {
-        struct StructuredGrid1D
+        struct StructuredGrid1D : private std::vector<float_t>
         {
             public:
             static StructuredGrid1D CreateFromStep(float_t a, float_t b, float_t step)
@@ -19,7 +19,7 @@ namespace EqSolver
                 assert(step > 0.0);
                 assert(step < b-a);
 
-                size_t segm_nmbr = (b-a)/step + 1;
+                size_t segm_nmbr = static_cast<size_t>((b-a)/step) + 1;
                 size_t nodes_nmbr{segm_nmbr + 1ull};
                 step = (b-a)/segm_nmbr;
                 std::vector<float_t> nodes(nodes_nmbr, a);
@@ -47,11 +47,18 @@ namespace EqSolver
 
 
             public:
-                std::vector<float_t> data;
+            //     std::vector<float_t> data;
+
+            using std::vector<float_t>::operator[];
+            using std::vector<float_t>::data;
+            using std::vector<float_t>::begin;
+            using std::vector<float_t>::end;
+            using std::vector<float_t>::front;
+            using std::vector<float_t>::back;
 
             protected:
                 StructuredGrid1D(const std::vector<float_t>& nodes) 
-                    : data{nodes}
+                    : std::vector<float_t>{nodes}
                 {}
         };
     } // Grid

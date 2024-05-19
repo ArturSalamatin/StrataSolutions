@@ -1,21 +1,18 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <src/Grid/StructuredGrid1D.h>
 
-using namespace OptLib;
+using namespace EqSolver;
+using namespace EqSolver::Grid;
 
 
 TEST(Grid, ctor) {
 
-    // testing Point ctors
-    auto rp1{Point<3>{1.0, 2.0, 3.0}};
-    auto rp2 = rp1;
-    auto rp3 = Point<3>{1.0, 2.0, 3.0};
-    auto rp4{std::move(rp2)};
-    auto rp5 = std::move(rp4);
-    Point<3> rp6{2.0, 1.0, 3.0};
-
-    ASSERT_EQ(0, 0);
+StructuredGrid1D grid_x{StructuredGrid1D::CreateFromNodes(0.0, 1.0, 11)};
+    ASSERT_EQ(grid_x[0], 0.0);
+    ASSERT_EQ(grid_x.back(), 1.0);
+    ASSERT_EQ(grid_x[5], 0.5);
 }
 
 int main(int argc, char **argv) {
