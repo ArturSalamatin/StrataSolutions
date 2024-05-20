@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Grid/Defines.h"
-#include "Grid/StructuredGrid2D.h"
+#include "../Grid/Defines.h"
+#include "../Grid/UniformGrid2D.h"
 
 namespace EqSolver
 {
     struct GridFactory
     {
-        static Grid::StructuredGrid2D CreateGridFromStep(const Box& box, const Steps& steps)
+        static Grid::UniformGrid2D CreateGridFromStep(const Box& box, const Steps& steps)
         {
             return {
                 Grid::UniformGrid1D::CreateFromStep(

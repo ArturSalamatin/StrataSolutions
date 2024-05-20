@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <src/Grid/StructuredGrid1D.h>
+#include <src/Grid/UniformdGrid1D.h>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
@@ -13,6 +13,7 @@ TEST(Grid, ctor)
     {
       ASSERT_NEAR(grid_x[i], i / 10.0, 1E-10);
     }
+
 }
 
 int main(int argc, char **argv) {
