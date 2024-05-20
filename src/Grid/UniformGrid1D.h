@@ -40,7 +40,7 @@ namespace EqSolver
             UniformGrid1D(const UniformGrid1D&) noexcept = default;
             UniformGrid1D(UniformGrid1D&&) noexcept = default;
 
-            float_t step(size_t) const
+            float_t step(ptrdiff_t) const
             {
                 return its_step;
             }
