@@ -8,7 +8,7 @@ using namespace EqSolver::Grid;
 
 TEST(Grid, ctor) 
 {
-    StructuredGrid1D grid_x{StructuredGrid1D::CreateFromNodes(0.0, 1.0, 11)};
+    UniformGrid1D grid_x{UniformGrid1D::CreateFromNodes(0.0, 1.0, 11)};
     for(size_t i = 0; i < grid_x.size(); ++i)
     {
       ASSERT_NEAR(grid_x[i], i / 10.0, 1E-10);

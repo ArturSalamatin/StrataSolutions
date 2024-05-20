@@ -10,9 +10,9 @@ namespace EqSolver
         static Grid::StructuredGrid2D CreateGridFromStep(const Box& box, const Steps& steps)
         {
             return {
-                Grid::StructuredGrid1D::CreateFromStep(
+                Grid::UniformGrid1D::CreateFromStep(
                     box.x_a, box.x_b, steps.step_x), 
-                Grid::StructuredGrid1D::CreateFromStep(
+                Grid::UniformGrid1D::CreateFromStep(
                     box.y_a, box.y_b, steps.step_y)
             };
         }

@@ -10,10 +10,10 @@ namespace EqSolver
 {
     namespace Grid
     {
-        struct StructuredGrid1D : private std::vector<float_t>
+        struct UniformGrid1D : private std::vector<float_t>
         {
             public:
-            static StructuredGrid1D CreateFromStep(float_t a, float_t b, float_t step)
+            static UniformGrid1D CreateFromStep(float_t a, float_t b, float_t step)
             {
                 assert(b > a);
                 assert(step > 0.0);
@@ -24,7 +24,7 @@ namespace EqSolver
                 return CreateFromNodes(a, b, segm_nmbr+1);
             }
 
-            static StructuredGrid1D CreateFromNodes(float_t a, float_t b, size_t nodes_nmbr)
+            static UniformGrid1D CreateFromNodes(float_t a, float_t b, size_t nodes_nmbr)
             {
                 assert(b > a);
                 assert(nodes_nmbr > 1ull);
@@ -37,8 +37,13 @@ namespace EqSolver
                  return {nodes};
             }
 
-            StructuredGrid1D(const StructuredGrid1D&) noexcept = default;
-            StructuredGrid1D(StructuredGrid1D&&) noexcept = default;
+            UniformGrid1D(const UniformGrid1D&) noexcept = default;
+            UniformGrid1D(UniformGrid1D&&) noexcept = default;
+
+            float_t step(size_t) const
+            {
+                return its_step;
+            }
 
             public:
             using std::vector<float_t>::operator[];
@@ -50,9 +55,14 @@ namespace EqSolver
             using std::vector<float_t>::back;
 
             protected:
-                StructuredGrid1D(const std::vector<float_t>& nodes) 
+                UniformGrid1D(const std::vector<float_t>& nodes) 
                     : std::vector<float_t>{nodes}
-                {}
+                {
+                    assert(nodes.size() > 1);
+                    its_step = nodes[1]-nodes[0];
+                }
+
+            float_t its_step;
         };
     } // Grid
 } // EqSolver

@@ -6,7 +6,7 @@ namespace EqSolver
 {
     namespace Grid
     {
-        struct TemporalGrid : public StructuredGrid1D
+        struct TemporalGrid : public UniformGrid1D
         { };
     } // Grid
 } // EqSolver
