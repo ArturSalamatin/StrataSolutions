@@ -5,6 +5,16 @@
         "vector": "cpp",
         "xstring": "cpp",
         "xutility": "cpp",
-        "alignedvector3": "cpp"
+        "alignedvector3": "cpp",
+        "sparse": "cpp",
+        "chrono": "cpp",
+        "deque": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "initializer_list": "cpp",
+        "list": "cpp",
+        "xhash": "cpp",
+        "xiosbase": "cpp",
+        "xtree": "cpp"
     }
 }
