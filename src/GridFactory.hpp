@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Grid/Defines.h"
-#include "../Grid/UniformGrid2D.h"
+#include "Grid/Defines.h"
+#include "Grid/UniformGrid2D.h"
 
 namespace EqSolver
 {
