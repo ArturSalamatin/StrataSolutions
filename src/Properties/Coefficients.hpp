@@ -26,7 +26,7 @@ namespace EqSolver
             Fields(const Grid_t &grid,
                    const Capacity_t &capacity,
                    const Conductivity_t &conductivity)
-                : volumes{set_volumes(grid)},
+                : volume_f{set_volumes(grid)},
                   capacity_f{set_functor(grid, capacity)},
                   conductivity_f{set_functor(grid, conductivity)}
             {
@@ -41,21 +41,21 @@ namespace EqSolver
                     grid.Y_nodes.size()};
 
 #pragma omp parallel for
-                for (size_t j = 0; j < volumes.cols(); ++j)
-                    for (size_t i = 0; i < volumes.rows(); ++i)
+                for (ptrdiff_t j = 0; j < volumes.cols(); ++j)
+                    for (ptrdiff_t i = 0; i < volumes.rows(); ++i)
                         volumes(i, j) =
                             grid.X_nodes.step(i) * grid.Y_nodes.step(j);
 
                 // account for boundary cells
-                for (size_t j = 0; j < volumes.cols(); ++j)
+                for (ptrdiff_t j = 0; j < volumes.cols(); ++j)
                 {
                     volumes(0, j) /= 2.0;
-                    volumes(end, j) /= 2.0;
+                    volumes(volumes.rows()-1, j) /= 2.0;
                 }
-                for (size_t i = 0; i < volumes.rows(); ++i)
+                for (ptrdiff_t i = 0; i < volumes.rows(); ++i)
                 {
                     volumes(i, 0) /= 2.0;
-                    volumes(i, end) /= 2.0;
+                    volumes(i, volumes.cols()-1) /= 2.0;
                 }
                 return volumes;
             }
@@ -65,16 +65,16 @@ namespace EqSolver
                 const Grid_t &grid,
                 const Functor &functor)
             {
-                Eigen::Matrix<float_t> functor_nodes{
+                Eigen::MatrixX<float_t> functor_nodes{
                     grid.X_nodes.size(),
                     grid.Y_nodes.size()};
 
 #pragma omp parallel for
-                for (size_t j = 0; j < functor_nodes.cols(); ++j)
-                    for (size_t i = 0; i < functor_nodes.rows(); ++i)
+                for (ptrdiff_t j = 0; j < functor_nodes.cols(); ++j)
+                    for (ptrdiff_t i = 0; i < functor_nodes.rows(); ++i)
                     {
                         functor_nodes(i, j) =
-                            properties.conductivity(
+                            functor(
                                 grid.X_nodes[i],
                                 grid.Y_nodes[j]);
                     }
