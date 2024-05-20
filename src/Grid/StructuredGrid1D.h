@@ -20,13 +20,8 @@ namespace EqSolver
                 assert(step < b-a);
 
                 size_t segm_nmbr = static_cast<size_t>((b-a)/step) + 1;
-                size_t nodes_nmbr{segm_nmbr + 1ull};
-                step = (b-a)/segm_nmbr;
-                std::vector<float_t> nodes(nodes_nmbr, a);
 
-                 std::generate(nodes.begin(), nodes.end(), [n = 0, &step, &a]() mutable { return a + n++ * step; });
-
-                 return {nodes};
+                return CreateFromNodes(a, b, segm_nmbr+1);
             }
 
             static StructuredGrid1D CreateFromNodes(float_t a, float_t b, size_t nodes_nmbr)
@@ -37,7 +32,7 @@ namespace EqSolver
                 float_t step = (b-a)/(nodes_nmbr-1ull);
                 std::vector<float_t> nodes(nodes_nmbr, a);
 
-                 std::generate(nodes.begin(), nodes.end(), [n = 0, &step, &a]() mutable { return a+ n++ * step; });
+                std::generate(nodes.begin(), nodes.end(), [n = 0, &step, &a]() mutable { return a + n++ * step; });
 
                  return {nodes};
             }
@@ -46,8 +41,6 @@ namespace EqSolver
             StructuredGrid1D(StructuredGrid1D&&) noexcept = default;
 
             public:
-            //     std::vector<float_t> data;
-
             using std::vector<float_t>::operator[];
             using std::vector<float_t>::data;
             using std::vector<float_t>::size;
