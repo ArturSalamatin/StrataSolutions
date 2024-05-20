@@ -4,7 +4,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
 
 #include "../Grid/Defines.h"
 #include "../Grid/UniformGrid2D.h"
@@ -43,16 +43,15 @@ namespace EqSolver
         struct BaseSplit
         {
             BaseSplit(
-                std::shared_ptr<Fields> properties,
+                std::shared_ptr<Properties::Fields> properties,
                 size_t serial_nodes,
                 size_t matrix_size)
                 : properties{properties},
                   LaplaceTerm(
-                      serial_nodes, // number of matricies
-                      Eigen::SparseMatrix<float_t>{ // ctor per matrix
-                          matrix_size,
-                          matrix_size}),
-                  grid{grid}
+                      serial_nodes,                // number of matricies
+                      Eigen::SparseMatrix<float_t>{// ctor per matrix
+                                                   matrix_size,
+                                                   matrix_size})
             {
                 for (auto &m : LaplaceTerm)
                 {
@@ -62,31 +61,69 @@ namespace EqSolver
 
         protected:
             VectSpMatrix LaplaceTerm;
-            std::shared_ptr<Fields> properties;
+            std::shared_ptr<Properties::Fields> properties;
+
+            using Conductivity_f = Properties::Fields::Conductivity_f;
         };
 
         struct SplitX
             : public BaseSplit
         {
             SplitX(
-                std::shared_ptr<Fields> properties,
+                std::shared_ptr<Properties::Fields> properties,
                 const Grid::UniformGrid2D &grid)
-                : BaseSplit{properties, grid.X_nodes.size(), grid.Y_nodes.size()}
+                : BaseSplit{
+                      properties,
+                      grid.X_nodes.size(),
+                      grid.Y_nodes.size()}
             {
-
-                FillLaplaceTerm();
+                FillLaplaceTerm(grid);
             }
 
         protected:
-            void FillLaplaceTerm()
+            template <typename Grid_t>
+            void FillLaplaceTerm(const Grid_t &grid)
             {
-                Eigen::Matrix<float_t> conductivity_y_bounds{
-                    set_conductivity_y_bounds(properties->conductivity_f)};
+                conductivity_y_bounds{
+                    set_conductivity_y_bounds(properties->conductivity_f, grid)};
+
+                const auto &gr_y = grid.Y_nodes;
+
+#pragma omp parallel for
+                for (size_t m_id = 0; m_id < LaplaceTerm.size(); ++m_id)
+                {
+                    const auto &matrix = LaplaceTerm[m_id];
+                    std::vector<Eigen::Triplet<float_t>> tripletList;
+                    tripletList.reserve(matrix.rows() * 3ull - 2ull);
+
+                    tripletList.emplace_back(0ull, 0ull, conductivity_y_bounds(m_id, 0) / gr_y.step(0));
+                    tripletList.emplace_back(0ull, 1ull, conductivity_y_bounds(m_id, 0) / gr_y.step(0));
+                    for (size_t row = 1; row < matrix.rows() - 1; ++row)
+                    {
+                        tripletList.emplace_back(row, row - 1,
+                                                 conductivity_y_bounds(m_id, row) / gr_y.step(row - 1));
+                        tripletList.emplace_back(row, row,
+                                                 conductivity_y_bounds(m_id, row) / gr_y.step(row - 1) +
+                                                     conductivity_y_bounds(m_id, row + 1) / gr_y.step(row));
+                        tripletList.emplace_back(row, row + 1,
+                                                 conductivity_y_bounds(m_id, row + 1) / gr_y.step(row));
+                    }
+                    size_t end = matrix.rows() - 1;
+                    tripletList.emplace_back(end, end - 1,
+                                             conductivity_y_bounds(m_id, end + 1) / gr_y.step(end));
+                    tripletList.emplace_back(end, end,
+                                             conductivity_y_bounds(m_id, end + 1) / gr_y.step(end));
+
+                    matrix.setFromTriplets(tripletList.begin(), tripletList.end());
+                }
             }
 
-            auto set_conductivity_y_bounds(const auto &conductivity_nodes) const
+            template <typename Grid_t>
+            auto set_conductivity_y_bounds(
+                const Conductivity_f &conductivity_nodes,
+                const Grid_t &grid) const
             {
-                Eigen::Matrix<float_t> conductivity_y_bounds{
+                Conductivity_f conductivity_y_bounds{
                     grid.X_nodes.size(),
                     grid.Y_nodes.size() + 1};
 
@@ -111,30 +148,59 @@ namespace EqSolver
             : public BaseSplit
         {
             SplitY(
-                std::shared_ptr<Fields> properties,
+                std::shared_ptr<Properties::Fields> properties,
                 const Grid::UniformGrid2D &grid)
-                : properties{properties},
-                  LaplaceTerm(
-                      grid.X_nodes.size(),
-                      Eigen::SparseMatrix<float_t>{
-                          grid.X_nodes.size(),
-                          grid.X_nodes.size()}),
-                  grid{grid}
+                : BaseSplit{properties, grid.Y_nodes.size(), grid.X_nodes.size()}
             {
-                FillLaplaceTerm();
+                FillLaplaceTerm(grid);
             }
 
         protected:
-
-            void FillLaplaceTerm()
+            template <typename Grid_t>
+            void FillLaplaceTerm(const Grid_t &grid)
             {
-                Eigen::Matrix<float_t> conductivity_x_bounds{
-                    set_conductivity_x_bounds(properties->conductivity_f)};
+                Conductivity_f conductivity_x_bounds{
+                    set_conductivity_x_bounds(properties->conductivity_f, grid)};
+
+                const auto &gr_x = grid.X_nodes;
+
+#pragma omp parallel for
+                for (size_t m_id = 0; m_id < LaplaceTerm.size(); ++m_id)
+                {
+                    const auto &matrix = LaplaceTerm[m_id];
+                    std::vector<Eigen::Triplet<float_t>> tripletList;
+                    tripletList.reserve(matrix.rows() * 3ull - 2ull);
+
+                    tripletList.emplace_back(0ull, 0ull,
+                                             conductivity_x_bounds(0, m_id) / gr_x.step(0));
+                    tripletList.emplace_back(0ull, 1ull,
+                                             conductivity_x_bounds(1, m_id) / gr_x.step(0));
+                    for (size_t row = 1; row < matrix.rows() - 1; ++row)
+                    {
+                        tripletList.emplace_back(row, row - 1,
+                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row-1));
+                        tripletList.emplace_back(row, row,
+                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row-1) +
+                                                     conductivity_x_bounds(row + 1, m_id) / gr_x.step(row));
+                        tripletList.emplace_back(row, row + 1,
+                                                 conductivity_x_bounds(row + 1, m_id) / gr_x.step(row));
+                    }
+                    size_t end = matrix.rows() - 1;
+                    tripletList.emplace_back(end, end - 1,
+                                             conductivity_x_bounds(end, m_id) / gr_x.step(end));
+                    tripletList.emplace_back(end, end,
+                                             conductivity_x_bounds(end + 1, m_id) / gr_x.step(end));
+
+                    matrix.setFromTriplets(tripletList.begin(), tripletList.end());
+                }
             }
 
-            auto set_conductivity_x_bounds(const auto &conductivity_nodes) const
+            template <typename Grid_t>
+            Conductivity_f set_conductivity_x_bounds(
+                const Conductivity_f &conductivity_nodes,
+                const Grid_t &grid) const
             {
-                Eigen::Matrix<float_t> conductivity_x_bounds{
+                Conductivity_f conductivity_x_bounds{
                     grid.X_nodes.size() + 1,
                     grid.Y_nodes.size()};
 
