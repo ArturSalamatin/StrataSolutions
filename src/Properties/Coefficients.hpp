@@ -21,5 +21,13 @@ namespace EqSolver
                 return 1.0;
             }
         };
+
+        template<typename Capacity_t, typename Conductivity_t>
+        struct Properties
+        {
+            Capacity_t capacity;
+            Conductivity_t conductivity;
+        }
+
     } // Coefficients
 } // EqSolver
