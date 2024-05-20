@@ -45,12 +45,12 @@ namespace EqSolver
             StructuredGrid1D(const StructuredGrid1D&) noexcept = default;
             StructuredGrid1D(StructuredGrid1D&&) noexcept = default;
 
-
             public:
             //     std::vector<float_t> data;
 
             using std::vector<float_t>::operator[];
             using std::vector<float_t>::data;
+            using std::vector<float_t>::size;
             using std::vector<float_t>::begin;
             using std::vector<float_t>::end;
             using std::vector<float_t>::front;

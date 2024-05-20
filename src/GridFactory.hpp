@@ -3,7 +3,6 @@
 #include "Grid/Defines.h"
 #include "Grid/StructuredGrid2D.h"
 
-
 namespace EqSolver
 {
     struct GridFactory
@@ -17,5 +16,5 @@ namespace EqSolver
                     box.y_a, box.y_b, steps.step_y)
             };
         }
-    }
+    };
 } // EqSolver
