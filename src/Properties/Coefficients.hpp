@@ -14,9 +14,9 @@ namespace EqSolver
     {
         struct Fields
         {
-            using Volume_f = Eigen::Matrix<float_t>;
-            using Capacity_f = Eigen::Matrix<float_t>;
-            using Conductivity_f = Eigen::Matrix<float_t>;
+            using Volume_f = Eigen::MatrixX<float_t>;
+            using Capacity_f = Eigen::MatrixX<float_t>;
+            using Conductivity_f = Eigen::MatrixX<float_t>;
 
             Volume_f volume_f;
             Capacity_f capacity_f;
