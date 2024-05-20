@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <src/Grid/UniformdGrid1D.h>
+#include <src/Grid/UniformGrid1D.h>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
