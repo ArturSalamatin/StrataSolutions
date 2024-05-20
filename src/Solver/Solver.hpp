@@ -178,9 +178,9 @@ namespace EqSolver
                     for (size_t row = 1; row < matrix.rows() - 1; ++row)
                     {
                         tripletList.emplace_back(row, row - 1,
-                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row-1));
+                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row - 1));
                         tripletList.emplace_back(row, row,
-                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row-1) +
+                                                 conductivity_x_bounds(row, m_id) / gr_x.step(row - 1) +
                                                      conductivity_x_bounds(row + 1, m_id) / gr_x.step(row));
                         tripletList.emplace_back(row, row + 1,
                                                  conductivity_x_bounds(row + 1, m_id) / gr_x.step(row));
@@ -222,4 +222,5 @@ namespace EqSolver
             }
         };
 
-    } // EqSolver
+    } // Splitting method
+} // EqSolver
