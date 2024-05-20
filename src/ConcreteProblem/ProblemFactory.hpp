@@ -8,7 +8,7 @@ namespace EqSolver
     {
         struct Capacity
         {
-            float_t operator()(float_t x, float_t y)
+            float_t operator()(float_t x, float_t y) const
             {
                 return x + y + 1.0;
             }
@@ -16,7 +16,7 @@ namespace EqSolver
 
         struct Conductivity
         {
-            float_t operator()(float_t x, float_t y)
+            float_t operator()(float_t x, float_t y) const
             {
                 return 1.0;
             }
