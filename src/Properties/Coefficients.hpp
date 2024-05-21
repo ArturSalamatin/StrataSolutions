@@ -49,7 +49,7 @@ namespace EqSolver
                                 grid.Y_nodes[j]);
                     }
 
-                return functor_nodes*grid.cell_volume;
+                return functor_nodes /* * grid.cell_volume */;
             }
         };
 
