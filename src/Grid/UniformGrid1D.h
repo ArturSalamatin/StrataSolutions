@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <cassert>
 
+#include <Eigen/Core>
+#include <Eigen/Dense>
+
 #include "Defines.h"
 
 namespace EqSolver
@@ -12,6 +15,8 @@ namespace EqSolver
     {
         struct UniformGrid1D : private std::vector<float_t>
         {
+            using Cell_Volume = Eigen::ArrayX<float_t>;
+
             public:
             static UniformGrid1D CreateFromStep(float_t a, float_t b, float_t step)
             {
@@ -45,6 +50,11 @@ namespace EqSolver
                 return its_step;
             }
 
+            const Cell_Volume& cell_volume() const
+            {
+                return its_cell_volume;
+            }
+
             public:
             using std::vector<float_t>::operator[];
             using std::vector<float_t>::data;
@@ -60,9 +70,15 @@ namespace EqSolver
                 {
                     assert(nodes.size() > 1);
                     its_step = nodes[1]-nodes[0];
+                    its_cell_volume = Cell_Volume::Constant(nodes.size(), its_step);
+                    its_cell_volume(0) /= 2.0;
+                    its_cell_volume(its_cell_volume.size()-1) /= 2.0;
                 }
 
             float_t its_step;
+
+            Cell_Volume its_cell_volume;
+
         };
     } // Grid
 } // EqSolver
