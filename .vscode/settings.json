@@ -23,6 +23,7 @@
         "thread": "cpp",
         "type_traits": "cpp",
         "xmemory": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "dense": "cpp"
     }
 }

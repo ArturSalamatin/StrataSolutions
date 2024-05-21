@@ -53,5 +53,28 @@ namespace EqSolver
             }
         };
 
+        struct State2D
+        {
+            static State2D FillWithZeros(const Grid::UniformGrid2D &grid)
+            {
+                Eigen::MatrixX<float_t> cur_state{grid.X_nodes.size(), grid.Y_nodes.size()};
+                cur_state.fill(0.0);
+
+                return {cur_state};
+            }
+
+            State2D(const State2D &) noexcept = default;
+            State2D(State2D &&) noexcept = default;
+
+        protected:
+            Eigen::MatrixX<float_t> cur_state;
+
+        protected:
+            State2D(const Eigen::MatrixX<float_t> &cur_state)
+                : cur_state{cur_state}
+            {
+            }
+        };
+
     } // Coefficients
 } // EqSolver
