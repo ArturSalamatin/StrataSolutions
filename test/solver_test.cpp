@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <src/Grid/Defines.h>
-#include <src/Solver/Solver.hpp>
+#include <src/Solver/SplittingMethod/SplitX.hpp>
 
 #include <src/GridFactory.hpp>
 

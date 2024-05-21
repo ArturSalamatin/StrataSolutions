@@ -14,6 +14,27 @@ namespace EqSolver
 {
     namespace SplittingMethod
     {
+        struct TemporalTerm
+        {
+            using Factor = Properties::Fields::Conductivity_f;
+
+            template <typename Grid_t>
+            TemporalTerm(
+                std::shared_ptr<Properties::Fields> properties,
+                const Grid_t &grid)
+                : factor{properties->capacity_vol_f} // volumes are taken into account
+            {
+            }
+
+            auto UseTemporalStep(float_t tau) const
+            {
+                return (1.0/tau)*factor;
+            }
+
+protected:
+            Factor factor;
+        };
+
         using SpMatrix = Eigen::SparseMatrix<float_t>;
         using VectSpMatrix = std::vector<Eigen::SparseMatrix<float_t>>;
 

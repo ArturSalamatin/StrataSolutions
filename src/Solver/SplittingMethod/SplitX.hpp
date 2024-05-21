@@ -116,5 +116,15 @@ namespace EqSolver
                 return conductivity_y_bounds;
             }
         };
+
+        struct SolveX
+        {
+            static void solve(
+                State2D& state, 
+                const Eigen::ArrayXX<float_t>& temporal_factor)
+            {
+                
+            }
+        };
     } // SplittingMethod
 } // EqSolver

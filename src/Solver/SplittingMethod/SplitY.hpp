@@ -18,7 +18,6 @@ namespace EqSolver
 {
     namespace SplittingMethod
     {
-
         struct SplitY
             : public BaseSplit
         {
