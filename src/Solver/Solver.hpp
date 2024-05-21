@@ -59,7 +59,7 @@ namespace EqSolver
                 }
             }
 
-        protected:
+        public:
             VectSpMatrix LaplaceTerm;
             std::shared_ptr<Properties::Fields> properties;
 
