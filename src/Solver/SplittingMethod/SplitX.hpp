@@ -41,6 +41,7 @@ namespace EqSolver
                     set_conductivity_y_bounds(properties->conductivity_f, grid)};
 
                 const auto &gr_y = grid.Y_nodes;
+                const auto &x_vol = grid.X_nodes.cell_volume();
 
 #pragma omp parallel for
                 for (ptrdiff_t m_id = 0; m_id < ptrdiff_t(LaplaceTerm.size()); ++m_id)
@@ -49,23 +50,33 @@ namespace EqSolver
                     std::vector<Eigen::Triplet<float_t, ptrdiff_t>> tripletList;
                     tripletList.reserve(matrix.rows() * 3ull - 2ull);
 
-                    tripletList.emplace_back(0, 0, conductivity_y_bounds(m_id, 0) / gr_y.step(0));
-                    tripletList.emplace_back(0, 1, conductivity_y_bounds(m_id, 0) / gr_y.step(0));
+                    tripletList.emplace_back(
+                        0, 0,
+                        conductivity_y_bounds(m_id, 0) / gr_y.step(0) * x_vol(0));
+                    tripletList.emplace_back(
+                        0, 1,
+                        conductivity_y_bounds(m_id, 0) / gr_y.step(0) * x_vol(0));
                     for (ptrdiff_t row = 1; row < ptrdiff_t(matrix.rows()) - 1; ++row)
                     {
-                        tripletList.emplace_back(row, row - 1,
-                                                 conductivity_y_bounds(m_id, row) / gr_y.step(row - 1));
-                        tripletList.emplace_back(row, row,
-                                                 conductivity_y_bounds(m_id, row) / gr_y.step(row - 1) +
-                                                     conductivity_y_bounds(m_id, row + 1) / gr_y.step(row));
-                        tripletList.emplace_back(row, row + 1,
-                                                 conductivity_y_bounds(m_id, row + 1) / gr_y.step(row));
+                        tripletList.emplace_back(
+                            row, row - 1,
+                            conductivity_y_bounds(m_id, row) / gr_y.step(row - 1) * x_vol(row));
+                        tripletList.emplace_back(
+                            row, row,
+                            (conductivity_y_bounds(m_id, row) / gr_y.step(row - 1) +
+                             conductivity_y_bounds(m_id, row + 1) / gr_y.step(row)) *
+                                x_vol(row));
+                        tripletList.emplace_back(
+                            row, row + 1,
+                            conductivity_y_bounds(m_id, row + 1) / gr_y.step(row) * x_vol(row));
                     }
                     ptrdiff_t end = ptrdiff_t(matrix.rows()) - 1;
-                    tripletList.emplace_back(end, end - 1,
-                                             conductivity_y_bounds(m_id, end + 1) / gr_y.step(end));
-                    tripletList.emplace_back(end, end,
-                                             conductivity_y_bounds(m_id, end + 1) / gr_y.step(end));
+                    tripletList.emplace_back(
+                        end, end - 1,
+                        conductivity_y_bounds(m_id, end + 1) / gr_y.step(end) * x_vol(end));
+                    tripletList.emplace_back(
+                        end, end,
+                        conductivity_y_bounds(m_id, end + 1) / gr_y.step(end) * x_vol(end));
 
                     matrix.setFromTriplets(tripletList.begin(), tripletList.end());
                 }

@@ -24,6 +24,7 @@
         "type_traits": "cpp",
         "xmemory": "cpp",
         "xstddef": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "*.inc": "cpp"
     }
 }
