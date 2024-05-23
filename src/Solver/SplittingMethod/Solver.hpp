@@ -23,21 +23,31 @@ namespace EqSolver
                 std::shared_ptr<Properties::Fields> properties,
                 const Grid_t &grid,
                 const State2D &state)
-                : splitX{properties, grid}, splitY{properties, grid}, factor{properties, grid}, grid{grid}, state{state}
+                : splitX{properties, grid}, 
+                splitY{properties, grid}, factor{properties, grid}, grid{grid}, 
+                state{state}
             {
             }
 
             void advance(float_t tau)
             {
-                Eigen::ArrayXX<float_t> tau_factor{factor.UseTemporalStep(tau)};
+                // tau_factor multiplies Delta_u at different time moments,
+                // t and t+tau
+                Eigen::ArrayXX<float_t> tau_factor{factor.DivideByTemporalStep(tau)};
+                // solve a set of 1D problems in y-direction, for various x-coords
                 solve_split_x(tau, tau_factor.data());
+                // solve a set of 1D problems in x-direction, for various y-coords
                 solve_split_y(tau, tau_factor.data());
             }
 
+protected:
             void solve_split_x(float_t tau, float_t *tau_factor)
             {
+                // nmbr of nodes in the 1D problem
                 ptrdiff_t chunk_size = grid.Y_nodes.size();
+                // stride in a 1D layout of 2D unknown temperature values
                 ptrdiff_t stride_size = grid.X_nodes.size();
+                // to be proided to Eigen::Map
                 Eigen::InnerStride<> stride{stride_size};
 
 #pragma omp parallel for
@@ -101,7 +111,7 @@ namespace EqSolver
             State2D state;
 
         protected:
-            auto solve_linear_problem(auto &A, const auto& b)
+            auto solve_linear_problem(auto &A, const auto &b)
             {
                 A.makeCompressed();
 

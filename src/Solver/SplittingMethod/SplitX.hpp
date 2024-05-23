@@ -11,6 +11,7 @@
 
 #include "../../Grid/Defines.h"
 #include "../../Properties/Coefficients.hpp"
+#include "../State2D.hpp"
 
 #include "BaseSplit.hpp"
 
@@ -120,7 +121,7 @@ namespace EqSolver
         struct SolveX
         {
             static void solve(
-                State2D& state, 
+                State::State2D& state, 
                 const Eigen::ArrayXX<float_t>& temporal_factor)
             {
                 

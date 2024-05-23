@@ -14,7 +14,9 @@ namespace EqSolver
             UniformGrid2D(const UniformGrid1D& X_nodes, const UniformGrid1D& Y_nodes)
             : X_nodes{X_nodes}, Y_nodes{Y_nodes}
             {
-                cell_volume = X_nodes.cell_volume().matrix() * Y_nodes.cell_volume().transpose().matrix();
+                cell_volume = 
+                X_nodes.cell_volume().matrix() * 
+                Y_nodes.cell_volume().transpose().matrix();
             }
 
             UniformGrid2D(const UniformGrid2D&) noexcept = default;

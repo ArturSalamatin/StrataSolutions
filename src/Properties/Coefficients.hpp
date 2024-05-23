@@ -52,32 +52,5 @@ namespace EqSolver
                 return functor_nodes /* * grid.cell_volume */;
             }
         };
-
-        struct State2D
-        {
-            using State_Container = Eigen::ArrayXX<float_t>;
-            static State2D FillWithZeros(const Grid::UniformGrid2D &grid)
-            {
-                State_Container cur_state{
-                    grid.X_nodes.size(), 
-                    grid.Y_nodes.size()};
-                cur_state.fill(0.0);
-
-                return {cur_state};
-            }
-
-            State2D(const State2D &) noexcept = default;
-            State2D(State2D &&) noexcept = default;
-
-        public:
-            State_Container cur_state;
-
-        protected:
-            State2D(const State_Container &cur_state)
-                : cur_state{cur_state}
-            {
-            }
-        };
-
     } // Coefficients
 } // EqSolver

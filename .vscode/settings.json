@@ -25,6 +25,8 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "dense": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "iosfwd": "cpp",
+        "xlocbuf": "cpp"
     }
 }

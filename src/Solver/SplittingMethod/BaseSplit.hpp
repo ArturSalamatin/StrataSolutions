@@ -26,7 +26,7 @@ namespace EqSolver
             {
             }
 
-            auto UseTemporalStep(float_t tau) const
+            auto DivideByTemporalStep(float_t tau) const
             {
                 return (1.0/tau)*factor;
             }
