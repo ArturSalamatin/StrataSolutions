@@ -90,6 +90,7 @@ namespace EqSolver
 
                     SpMatrix A{splitX.LaplaceTerm(i)};
                     A.diagonal() = A.diagonal() + time_factor;
+                    applyBC_split_x();
                     data = solve_linear_problem(A, rhs.transpose());
                 }
             }
@@ -122,7 +123,7 @@ namespace EqSolver
 
                     SpMatrix A{splitY.LaplaceTerm(j)};
                     A.diagonal() = A.diagonal() + time_factor.matrix();
-
+                    applyBC_split_y();
                     data = solve_linear_problem(A, rhs);
                 }
             }
@@ -147,6 +148,9 @@ namespace EqSolver
                 lu.factorize(A);
                 return lu.solve(b);
             }
+
+            void applyBC_split_x() {}
+            void applyBC_split_y() {}
         };
     } // SplittingMethod
 } // EqSolver

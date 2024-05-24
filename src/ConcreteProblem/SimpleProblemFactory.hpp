@@ -69,7 +69,7 @@ namespace EqSolver
                 : zero_state{
                       State::State2D::FillWithZeros(
                           grid)},
-                  bc{}
+                  bc{grid}
             {
             }
         };
