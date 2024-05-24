@@ -67,4 +67,5 @@ endmacro()
 
 add_google_test(grid1D_test)
 add_google_test(grid2D_test)
-add_google_test(solver_test)
+add_google_test(splitx_test)
+add_google_test(splitting_solver_test)
