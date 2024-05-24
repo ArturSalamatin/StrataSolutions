@@ -45,9 +45,9 @@ namespace EqSolver
                 const auto &x_vol = grid.X_nodes.cell_volume();
 
 #pragma omp parallel for
-                for (ptrdiff_t m_id = 0; m_id < ptrdiff_t(LaplaceTerm.size()); ++m_id)
+                for (ptrdiff_t m_id = 0; m_id < ptrdiff_t(its_LaplaceTerm.size()); ++m_id)
                 {
-                    auto &matrix = LaplaceTerm[m_id];
+                    auto &matrix = its_LaplaceTerm[m_id];
                     std::vector<Eigen::Triplet<float_t, ptrdiff_t>> tripletList;
                     tripletList.reserve(matrix.rows() * 3ull - 2ull);
 
@@ -115,16 +115,6 @@ namespace EqSolver
                         conductivity_nodes(i, end - 1);
                 }
                 return conductivity_y_bounds;
-            }
-        };
-
-        struct SolveX
-        {
-            static void solve(
-                State::State2D& state, 
-                const Eigen::ArrayXX<float_t>& temporal_factor)
-            {
-                
             }
         };
     } // SplittingMethod

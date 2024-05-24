@@ -45,23 +45,29 @@ protected:
                 size_t serial_nodes,
                 size_t matrix_size)
                 : properties{properties},
-                  LaplaceTerm(
+                  its_LaplaceTerm(
                       serial_nodes,                // number of matricies
                       Eigen::SparseMatrix<float_t>{// ctor per matrix
                                                    ptrdiff_t(matrix_size),
                                                    ptrdiff_t(matrix_size)})
             {
-                for (auto &m : LaplaceTerm)
+                for (auto &m : its_LaplaceTerm)
                 {
                     m.reserve(matrix_size * 3ull - 2ull);
                 }
             }
 
         public:
-            VectSpMatrix LaplaceTerm;
+            const SpMatrix& LaplaceTerm(size_t i) const
+            {
+                return its_LaplaceTerm[i];
+            }
             std::shared_ptr<Properties::Fields> properties;
 
             using Conductivity_f = Properties::Fields::Conductivity_f;
+
+            protected:
+            VectSpMatrix its_LaplaceTerm;
         };
     } // SplittingMethod
 } // EqSolver

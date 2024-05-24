@@ -8,13 +8,37 @@
 
 #include <src/GridFactory.hpp>
 
-#include <src/ConcreteProblem/ProblemFactory.hpp>
+// #include <src/ConcreteProblem/ProblemFactory.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
 using namespace EqSolver::Properties;
-using namespace EqSolver::ConcreteProblem;
+// using namespace EqSolver::ConcreteProblem;
 using namespace EqSolver::SplittingMethod;
+
+struct Capacity
+{
+  EqSolver::float_t operator()(EqSolver::float_t x, EqSolver::float_t y) const
+  {
+    return 1.0;
+  }
+};
+
+struct Conductivity
+{
+  EqSolver::float_t operator()(EqSolver::float_t x, EqSolver::float_t y) const
+  {
+    return 1.0;
+  }
+};
+
+struct Source
+{
+  EqSolver::float_t operator()(EqSolver::float_t x, EqSolver::float_t y) const
+  {
+    return 1.0;
+  }
+};
 
 TEST(Solver, splitX)
 {
@@ -25,14 +49,13 @@ TEST(Solver, splitX)
           Box{0.0, 1.0, 0.0, 1.0},
           Steps{0.11, 0.11})};
 
-//  ConcreteProblem::ProblemFactory factory{grid};
-
   std::shared_ptr<Properties::Fields>
       properties{
           std::make_shared<Properties::Fields>(
               grid,
               Capacity{},
-              Conductivity{})};
+              Conductivity{},
+              Source{})};
 
   SplitX splitx{properties, grid};
 }

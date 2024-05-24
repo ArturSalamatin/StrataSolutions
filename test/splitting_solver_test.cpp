@@ -8,7 +8,7 @@
 
 #include <src/GridFactory.hpp>
 
-#include <src/ConcreteProblem/ProblemFactory.hpp>
+#include <src/ConcreteProblem/SimpleProblemFactory.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
@@ -25,20 +25,19 @@ TEST(Solver, splitting_method)
           Box{0.0, 1.0, 0.0, 1.0},
           Steps{0.11, 0.11})};
 
-  ConcreteProblem::ProblemFactory factory{grid};
+  SimpleProblemFactory factory{grid};
 
   std::shared_ptr<Properties::Fields>
       properties{
           std::make_shared<Properties::Fields>(
               grid,
-              Capacity{},
-              Conductivity{})};
+              SimpleProblemFactory::Capacity{},
+              SimpleProblemFactory::Conductivity{},
+              SimpleProblemFactory::Source{})};
 
   Solver solver{properties, grid, factory.zero_state};
 
   solver.advance(0.01);
-
-
 }
 
 int main(int argc, char **argv)

@@ -21,7 +21,6 @@ namespace EqSolver
         struct Solver
         {
             using Map1D = Eigen::Map<Eigen::ArrayX<float_t>>;
-            //    using Map2D = Eigen::Map<Eigen::ArrayXX<float_t>>;
 
             using Map1D_Stride =
                 Eigen::Map<
@@ -36,6 +35,7 @@ namespace EqSolver
                 float_t initial_moment = 0.0)
                 : splitX{properties, grid},
                   splitY{properties, grid}, factor{properties, grid}, grid{grid},
+                  properties{properties},
                   state{state},
                   states(),
                   time_moments()
@@ -88,7 +88,7 @@ namespace EqSolver
                     Eigen::VectorX<float_t> rhs =
                         (data.array() * time_factor.array()).matrix();
 
-                    SpMatrix A{splitX.LaplaceTerm[i]};
+                    SpMatrix A{splitX.LaplaceTerm(i)};
                     A.diagonal() = A.diagonal() + time_factor;
                     data = solve_linear_problem(A, rhs.transpose());
                 }
@@ -112,10 +112,15 @@ namespace EqSolver
                             state.cur_state.data() + grid.X_nodes.size() * j,
                             (ptrdiff_t)grid.X_nodes.size()};
 
-                    // right handside of Au = b problem
-                    const Eigen::VectorX<float_t> rhs = (data * time_factor).matrix();
+                    auto source =
+                        Map1D{
+                            properties->source_vol_f.data() + grid.X_nodes.size() * j,
+                            (ptrdiff_t)grid.X_nodes.size()};
 
-                    SpMatrix A{splitY.LaplaceTerm[j]};
+                    // right handside of Au = b problem
+                    const Eigen::VectorX<float_t> rhs = (data * time_factor + source).matrix();
+
+                    SpMatrix A{splitY.LaplaceTerm(j)};
                     A.diagonal() = A.diagonal() + time_factor.matrix();
 
                     data = solve_linear_problem(A, rhs);
@@ -124,6 +129,7 @@ namespace EqSolver
 
             SplitX splitX;
             SplitY splitY;
+            std::shared_ptr<Properties::Fields> properties;
             TemporalTerm factor;
             const Grid_t &grid;
             State::State2D state;

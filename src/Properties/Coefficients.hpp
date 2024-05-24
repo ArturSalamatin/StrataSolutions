@@ -15,17 +15,25 @@ namespace EqSolver
         struct Fields
         {
             using Capacity_f = Eigen::ArrayXX<float_t>;
+            using Source_f = Eigen::ArrayXX<float_t>;
             using Conductivity_f = Eigen::ArrayXX<float_t>;
 
             Capacity_f capacity_vol_f;
+            Source_f source_vol_f;
             Conductivity_f conductivity_f;
 
-            template <typename Grid_t, typename Capacity_t, typename Conductivity_t>
+            template <
+                typename Grid_t,
+                typename Capacity_t,
+                typename Conductivity_t,
+                typename Source_t>
             Fields(const Grid_t &grid,
                    const Capacity_t &capacity,
-                   const Conductivity_t &conductivity)
+                   const Conductivity_t &conductivity,
+                   const Source_t &source)
                 : capacity_vol_f{set_functor(grid, capacity) * grid.cell_volume},
-                  conductivity_f{set_functor(grid, conductivity)}
+                  conductivity_f{set_functor(grid, conductivity)},
+                  source_vol_f{set_functor(grid, source) * grid.cell_volume}
             {
             }
 
