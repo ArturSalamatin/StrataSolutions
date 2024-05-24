@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <vector>
 
 #include <Eigen/Dense>
 #include <Eigen/Core>
@@ -79,7 +79,7 @@ namespace EqSolver
                             chunk_size, stride};
 
                     // memory chunk in temperature, corresponding to x-line
-                    const auto data =
+                    auto data =
                         Map1D_Stride{
                             state.cur_state.data() + i,
                             chunk_size, stride};
@@ -127,8 +127,8 @@ namespace EqSolver
             TemporalTerm factor;
             const Grid_t &grid;
             State::State2D state;
-            std::vector<State2D::State> states;
-            std : vector<float_t> time_moments;
+            std::vector<State::State2D> states;
+            std::vector<float_t> time_moments;
 
         protected:
             Eigen::VectorXd solve_linear_problem(
