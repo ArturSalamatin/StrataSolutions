@@ -46,13 +46,20 @@ namespace EqSolver
                 }
             };
 
+            struct BCFunctor
+            {
+                float_t operator()(float_t x, float_t y) const
+                {
+                    return 1+x+y;
+                }
+            }
             // struct BCcondNorth
             // {
             //     float_t 
             // }
             
             Problem::InitialCondition zero_state;
-            Problem::BoundaryConditions bc;
+            Problem::BoundaryConditions<Grid::UniformGrid1D, BCFunctor> bc;
 
             SimpleProblemFactory(
                 const Box &box, const Steps &steps)
@@ -69,7 +76,7 @@ namespace EqSolver
                 : zero_state{
                       State::State2D::FillWithZeros(
                           grid)},
-                  bc{grid}
+                  bc{grid, BCFunctor{}}
             {
             }
         };
