@@ -36,7 +36,8 @@ TEST(Solver, splitting_method)
               SimpleProblemFactory::Conductivity{},
               SimpleProblemFactory::Source{})};
 
-  Solver solver{properties, grid, factory.zero_state};
+  Solver solver{
+    properties, grid, factory.bc, factory.zero_state};
 
   solver.advance(0.01);
 }

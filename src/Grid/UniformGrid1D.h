@@ -13,7 +13,8 @@ namespace EqSolver
 {
     namespace Grid
     {
-        struct UniformGrid1D : private std::vector<float_t>
+        struct UniformGrid1D : 
+        private std::vector<float_t>
         {
             using Cell_Volume = Eigen::ArrayX<float_t>;
 
@@ -64,10 +65,11 @@ namespace EqSolver
             using std::vector<float_t>::end;
             using std::vector<float_t>::front;
             using std::vector<float_t>::back;
+            using std::vector<float_t>::vector;
 
         protected:
             UniformGrid1D(const std::vector<float_t> &nodes)
-                : std::vector<float_t>{nodes}, its_cell_volume{nodes.size()}
+                : std::vector<float_t>{nodes}
             {
                 assert(nodes.size() > 1);
                 its_step = nodes[1] - nodes[0];

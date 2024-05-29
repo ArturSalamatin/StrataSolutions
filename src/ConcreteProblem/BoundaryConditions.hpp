@@ -28,7 +28,7 @@ namespace EqSolver
         {
             BCEastWest(const BCEast &east, 
             const BCWest &west, 
-            const Grid::UniformGrid1D& gtid)
+            const Grid::UniformGrid1D& grid)
                 : east{east}, west{west}, grid{grid}
             {
             }
@@ -57,8 +57,10 @@ namespace EqSolver
             {
             }
 
-            BCSouthNorth south_north;
+            BoundaryConditions(const BoundaryConditions&) = default;
+
             BCEastWest east_west;
+            BCSouthNorth south_north;
             Functor functor;
         };
     } // ConcreteProblem

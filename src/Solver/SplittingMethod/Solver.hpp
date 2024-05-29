@@ -17,7 +17,7 @@ namespace EqSolver
 {
     namespace SplittingMethod
     {
-        template <typename Grid_t>
+        template <typename Grid_t, typename BC_t>
         struct Solver
         {
             using Map1D = Eigen::Map<Eigen::ArrayX<float_t>>;
@@ -28,15 +28,19 @@ namespace EqSolver
                     0,
                     Eigen::OuterStride<Eigen::Dynamic>>;
 
+            using RHS_t = Eigen::VectorX<float_t>;
+
             Solver(
                 std::shared_ptr<Properties::Fields> properties,
                 const Grid_t &grid,
+                const BC_t &bc,
                 const State::State2D &state,
                 float_t initial_moment = 0.0)
                 : splitX{properties, grid},
                   splitY{properties, grid}, factor{properties, grid}, grid{grid},
                   properties{properties},
                   state{state},
+                  bc{bc},
                   states(),
                   time_moments()
             {
@@ -68,7 +72,7 @@ namespace EqSolver
                 // to be provided to Eigen::Map
                 Eigen::OuterStride<Eigen::Dynamic> stride{stride_size};
 
-#pragma omp parallel for
+                //#pragma omp parallel for
                 //  take every line along x-direction. A line per y-node
                 for (ptrdiff_t i = 0; i < (ptrdiff_t)grid.X_nodes.size(); ++i)
                 {
@@ -85,19 +89,19 @@ namespace EqSolver
                             chunk_size, stride};
 
                     // right handside of Au = b problem
-                    Eigen::VectorX<float_t> rhs =
+                    RHS_t rhs =
                         (data.array() * time_factor.array()).matrix();
 
                     SpMatrix A{splitX.LaplaceTerm(i)};
                     A.diagonal() = A.diagonal() + time_factor;
-                    applyBC_split_x();
-                    data = solve_linear_problem(A, rhs.transpose());
+                    applyBC_split_x(A, rhs);
+                    data = solve_linear_problem(A, rhs);
                 }
             }
 
             void solve_split_y(float_t tau, float_t *tau_factor)
             {
-#pragma omp parallel for
+// #pragma omp parallel for
                 // take every line along x-direction. A line per y-node
                 for (ptrdiff_t j = 0; j < (ptrdiff_t)grid.Y_nodes.size(); ++j)
                 {
@@ -119,17 +123,18 @@ namespace EqSolver
                             (ptrdiff_t)grid.X_nodes.size()};
 
                     // right handside of Au = b problem
-                    const Eigen::VectorX<float_t> rhs = (data * time_factor + source).matrix();
+                    RHS_t rhs = (data * time_factor + source).matrix();
 
                     SpMatrix A{splitY.LaplaceTerm(j)};
                     A.diagonal() = A.diagonal() + time_factor.matrix();
-                    applyBC_split_y();
+                    applyBC_split_y(A,rhs);
                     data = solve_linear_problem(A, rhs);
                 }
             }
 
             SplitX splitX;
             SplitY splitY;
+            BC_t bc;
             std::shared_ptr<Properties::Fields> properties;
             TemporalTerm factor;
             const Grid_t &grid;
@@ -149,8 +154,21 @@ namespace EqSolver
                 return lu.solve(b);
             }
 
-            void applyBC_split_x() {}
-            void applyBC_split_y() {}
+            void applyBC_split_x(SpMatrix &A, RHS_t &b)
+            {
+                A.coeffRef(0, 0) = 1;
+                A.coeffRef(0, 1) = 0;
+                b(0) = 1.0;
+                ptrdiff_t n = A.outerSize()-1;
+                A.coeffRef(n, n) = 1.0;
+                A.coeffRef(n, n - 1) = 0.0;
+                b(n) = 1.0;
+            }
+
+            void applyBC_split_y(SpMatrix &A, RHS_t &b)
+            {
+                applyBC_split_x(A, b);
+            }
         };
     } // SplittingMethod
 } // EqSolver
