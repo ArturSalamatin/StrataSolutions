@@ -8,7 +8,8 @@ namespace EqSolver
     {
         struct InitialCondition : public State::State2D
         {
-            InitialCondition(const State::State2D &state)
+            InitialCondition(
+                const State::State2D &state) noexcept
                 : State::State2D{state}
             {
             }

@@ -5,6 +5,7 @@
 
 #include <src/Grid/Defines.h>
 #include <src/Solver/SplittingMethod/Solver.hpp>
+#include <src/Grid/UniformGrid2D.h>
 
 #include <src/GridFactory.hpp>
 

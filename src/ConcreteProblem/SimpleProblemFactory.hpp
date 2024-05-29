@@ -52,14 +52,10 @@ namespace EqSolver
                 {
                     return 1+x+y;
                 }
-            }
-            // struct BCcondNorth
-            // {
-            //     float_t 
-            // }
+            };
             
             Problem::InitialCondition zero_state;
-            Problem::BoundaryConditions<Grid::UniformGrid1D, BCFunctor> bc;
+            Problem::BoundaryConditions<BCFunctor> bc;
 
             SimpleProblemFactory(
                 const Box &box, const Steps &steps)

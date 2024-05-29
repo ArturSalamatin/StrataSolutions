@@ -12,13 +12,17 @@ namespace EqSolver
     {
         struct State2D
         {
-            using State_Container = Eigen::ArrayXX<float_t>;
-            State2D(const State_Container &cur_state)
+            using State_Container = 
+            Eigen::ArrayXX<float_t>;
+
+            State2D(
+                const State_Container &cur_state)
                 : cur_state{cur_state}
             {
             }
 
-            static State2D FillWithZeros(const Grid::UniformGrid2D &grid)
+            static State2D FillWithZeros(
+                const Grid::UniformGrid2D &grid)
             {
                 State_Container cur_state{
                     grid.X_nodes.size(),

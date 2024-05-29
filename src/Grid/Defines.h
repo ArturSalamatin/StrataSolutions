@@ -41,7 +41,7 @@ namespace EqSolver
 
     struct BCSouth : public BoundaryCondition
     {
-        BCSouth(BCType type, float_t fixed_x)
+        BCSouth(float_t fixed_x, BCType type = BCType::first)
             : BoundaryCondition{type}, fixed_x{fixed_x}
         {
         }
@@ -51,7 +51,7 @@ namespace EqSolver
 
     struct BCNorth : public BoundaryCondition
     {
-        BCNorth(BCType type, float_t fixed_x)
+        BCNorth(float_t fixed_x, BCType type = BCType::first)
             : BoundaryCondition{type}, fixed_x{fixed_x}
         {
         }
@@ -61,7 +61,7 @@ namespace EqSolver
 
     struct BCEast : public BoundaryCondition
     {
-        BCEast(BCType type, float_t fixed_y)
+        BCEast(float_t fixed_y, BCType type = BCType::first)
             : BoundaryCondition{type}, fixed_y{fixed_y}
         {
         }
@@ -71,7 +71,7 @@ namespace EqSolver
 
     struct BCWest : public BoundaryCondition
     {
-        BCWest(BCType type, float_t fixed_y)
+        BCWest(float_t fixed_y, BCType type = BCType::first)
             : BoundaryCondition{type}, fixed_y{fixed_y}
         {
         }

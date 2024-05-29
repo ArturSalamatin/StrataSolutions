@@ -2,43 +2,48 @@
 
 #include "../Grid/Defines.h"
 #include "../Grid/UniformGrid1D.h"
+#include "../Grid/UniformGrid2D.h"
 
 namespace EqSolver
 {
     namespace Problem
     {
-        template <typename Grid_t>
         struct BCSouthNorth
         {
-            BCSouthNorth(const BCSouth &south, const BCNorth &north, const Grid_t gtid)
-                : south{south}, north{north}, grid{grid}
+            BCSouthNorth(
+                const BCSouth &south, 
+                const BCNorth &north,
+                 const Grid::UniformGrid1D& grid)
+                : south{south}, north{north}, 
+                grid{grid}
             {
             }
 
             BCSouth south;
             BCNorth north;
-            Grid_t grid;
+            Grid::UniformGrid1D grid;
         };
 
-        template <typename Grid_t>
         struct BCEastWest
         {
-            BCEastWest(const BCEast &east, const BCWest &west, const Grid_t gtid)
+            BCEastWest(const BCEast &east, 
+            const BCWest &west, 
+            const Grid::UniformGrid1D& gtid)
                 : east{east}, west{west}, grid{grid}
             {
             }
 
             BCEast east;
             BCWest west;
-            Grid_t grid;
+            Grid::UniformGrid1D grid;
         };
 
-        template <typename Grid_1D_t, typename Functor>
+        template <
+        typename Functor>
         struct BoundaryConditions
         {
-            template <typename Grid_2D_t>
             BoundaryConditions(
-                const Grid_2D_t &grid,
+                const Grid::UniformGrid2D &grid,
                 const Functor& functor)
                 : south_north{
                     BCSouth{grid.X_nodes.front()},
@@ -52,8 +57,8 @@ namespace EqSolver
             {
             }
 
-            BCSouthNorth<Grid_1D_t> south_north;
-            BCEastWest<Grid_1D_t> east_west;
+            BCSouthNorth south_north;
+            BCEastWest east_west;
             Functor functor;
         };
     } // ConcreteProblem
