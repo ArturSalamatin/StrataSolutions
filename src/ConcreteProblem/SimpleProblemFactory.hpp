@@ -55,7 +55,7 @@ namespace EqSolver
             };
             
             Problem::InitialCondition zero_state;
-            Problem::BoundaryConditions<BCFunctor> bc;
+            Problem::BoundaryConditions bc;
 
             SimpleProblemFactory(
                 const Box &box, const Steps &steps)
