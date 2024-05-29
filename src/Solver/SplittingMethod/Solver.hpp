@@ -4,9 +4,8 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Core>
-#include <Eigen/SparseCholesky>
-
-#include <Eigen/Sparse>
+#include <Eigen/SparseCore>
+#include <Eigen/SparseLU>
 
 #include "../../Grid/Defines.h"
 

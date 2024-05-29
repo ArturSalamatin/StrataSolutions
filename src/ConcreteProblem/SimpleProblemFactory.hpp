@@ -3,8 +3,8 @@
 #include "../Grid/Defines.h"
 #include "../Solver/State2D.hpp"
 
-#include "InitialCondition.hpp"
-#include "BoundaryConditions.hpp"
+#include "../Solver/InitialCondition.hpp"
+#include "../Solver/BoundaryConditions.hpp"
 
 namespace EqSolver
 {
