@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Grid/Defines.h"
+#include "../Grid/UniformGridFactory.hpp"
 #include "../Solver/State2D.hpp"
 
 #include "../Solver/InitialCondition.hpp"
@@ -12,19 +13,17 @@ namespace EqSolver
     {
         /**
          * @brief Quite simple problem for tests
-         * All coefficients are unities
-         * Source term is zero
-         * 
-         * Inital state is zero
-         * 
-         * BCs are of first kind: zero values 
-         * 
+         * du/dt - d^2 u/dx^2 - d^2 u/dy^2 = 0
+         *
+         * u(t=0) = 0
+         * u(boundary) = 0
          */
         struct SimpleProblemFactory
         {
             struct Capacity
             {
-                float_t operator()(float_t x, float_t y) const
+                float_t operator()(
+                    float_t x, float_t y) const
                 {
                     return 1.0;
                 }
@@ -32,7 +31,8 @@ namespace EqSolver
 
             struct Conductivity
             {
-                float_t operator()(float_t x, float_t y) const
+                float_t operator()(
+                    float_t x, float_t y) const
                 {
                     return 1.0;
                 }
@@ -40,7 +40,8 @@ namespace EqSolver
 
             struct Source
             {
-                float_t operator()(float_t, float_t) const
+                float_t operator()(
+                    float_t, float_t) const
                 {
                     return 0.0;
                 }
@@ -48,22 +49,22 @@ namespace EqSolver
 
             struct BCFunctor
             {
-                float_t operator()(float_t x, float_t y) const
+                float_t operator()(
+                    float_t x, float_t y) const
                 {
-                    return 1+x+y;
+                    return 0.0;
                 }
             };
-            
-            Problem::InitialCondition zero_state;
-            Problem::BoundaryConditions bc;
+
+            Problem::InitialCondition
+                zero_state;
+            Problem::BoundaryConditions
+                bc;
 
             SimpleProblemFactory(
                 const Box &box, const Steps &steps)
-                : SimpleProblemFactory{Grid::UniformGrid2D{
-                      Grid::UniformGrid1D::CreateFromStep(
-                          box.x_a, box.x_b, steps.step_x),
-                      Grid::UniformGrid1D::CreateFromStep(
-                          box.y_a, box.y_b, steps.step_y)}}
+                : SimpleProblemFactory{
+                      GridFactory::CreateGridFromStep(box, steps)}
             {
             }
 

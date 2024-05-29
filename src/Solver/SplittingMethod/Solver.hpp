@@ -29,17 +29,22 @@ namespace EqSolver
 
             using RHS_t = Eigen::VectorX<float_t>;
 
+            template <typename ProblemFactory>
             Solver(
-                std::shared_ptr<Properties::Fields> properties,
+                std::shared_ptr<Properties::Fields>
+                    properties,
                 const Grid_t &grid,
                 const BC_t &bc,
                 const State::State2D &state,
+                const ProblemFactory &factory,
                 float_t initial_moment = 0.0)
                 : splitX{properties, grid},
-                  splitY{properties, grid}, factor{properties, grid}, grid{grid},
+                  splitY{properties, grid},
+                  factor{properties, grid},
+                  grid{grid},
                   properties{properties},
-                  state{state},
-                  bc{bc},
+                  state{factory.zero_state},
+                  bc{factory.bc},
                   states(),
                   time_moments()
             {
@@ -71,7 +76,7 @@ namespace EqSolver
                 // to be provided to Eigen::Map
                 Eigen::OuterStride<Eigen::Dynamic> stride{stride_size};
 
-                //#pragma omp parallel for
+#pragma omp parallel for
                 //  take every line along x-direction. A line per y-node
                 for (ptrdiff_t i = 0; i < (ptrdiff_t)grid.X_nodes.size(); ++i)
                 {
@@ -100,7 +105,7 @@ namespace EqSolver
 
             void solve_split_y(float_t tau, float_t *tau_factor)
             {
-// #pragma omp parallel for
+#pragma omp parallel for
                 // take every line along x-direction. A line per y-node
                 for (ptrdiff_t j = 0; j < (ptrdiff_t)grid.Y_nodes.size(); ++j)
                 {
@@ -126,7 +131,7 @@ namespace EqSolver
 
                     SpMatrix A{splitY.LaplaceTerm(j)};
                     A.diagonal() = A.diagonal() + time_factor.matrix();
-                    applyBC_split_y(A,rhs, j);
+                    applyBC_split_y(A, rhs, j);
                     data = solve_linear_problem(A, rhs);
                 }
             }
@@ -146,7 +151,7 @@ namespace EqSolver
                 const SpMatrix &A,
                 const Eigen::VectorX<float_t> &b)
             {
-                //         A.makeCompressed();
+                // A.makeCompressed();
                 Eigen::SparseLU<SpMatrix> lu;
                 lu.analyzePattern(A); // this is common for every matrix A. Can be optimized
                 lu.factorize(A);
@@ -158,7 +163,7 @@ namespace EqSolver
                 A.coeffRef(0, 0) = 1;
                 A.coeffRef(0, 1) = 0;
                 b(0) = bc.east_west.west_vals[i];
-                ptrdiff_t n = A.outerSize()-1;
+                ptrdiff_t n = A.outerSize() - 1;
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
                 b(n) = bc.east_west.east_vals[i];
@@ -169,7 +174,7 @@ namespace EqSolver
                 A.coeffRef(0, 0) = 1;
                 A.coeffRef(0, 1) = 0;
                 b(0) = bc.south_north.south_vals[j];
-                ptrdiff_t n = A.outerSize()-1;
+                ptrdiff_t n = A.outerSize() - 1;
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
                 b(n) = bc.south_north.north_vals[j];

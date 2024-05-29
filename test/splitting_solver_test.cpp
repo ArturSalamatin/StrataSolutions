@@ -7,9 +7,9 @@
 #include <src/Solver/SplittingMethod/Solver.hpp>
 #include <src/Grid/UniformGrid2D.h>
 
-#include <src/GridFactory.hpp>
+#include <src/Grid/UniformGridFactory.hpp>
 
-#include <src/ConcreteProblem/SimpleProblemFactory.hpp>
+#include <src/ConcreteProblems/SimpleProblemFactory.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
@@ -37,7 +37,7 @@ TEST(Solver, splitting_method)
               SimpleProblemFactory::Source{})};
 
   Solver solver{
-    properties, grid, factory.bc, factory.zero_state};
+    properties, grid, factory.bc, factory.zero_state, factory};
 
   solver.advance(0.01);
 }

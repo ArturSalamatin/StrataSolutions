@@ -6,14 +6,11 @@
 #include <src/Grid/Defines.h>
 #include <src/Solver/SplittingMethod/SplitX.hpp>
 
-#include <src/GridFactory.hpp>
-
-// #include <src/ConcreteProblem/ProblemFactory.hpp>
+#include <src/Grid/UniformGridFactory.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
 using namespace EqSolver::Properties;
-// using namespace EqSolver::ConcreteProblem;
 using namespace EqSolver::SplittingMethod;
 
 struct Capacity

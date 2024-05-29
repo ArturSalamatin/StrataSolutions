@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <src/Grid/UniformGrid2D.h>
-#include <src/GridFactory.hpp>
+#include <src/Grid/UniformGridFactory.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
