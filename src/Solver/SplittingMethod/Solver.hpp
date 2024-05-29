@@ -94,7 +94,7 @@ namespace EqSolver
 
                     SpMatrix A{splitX.LaplaceTerm(i)};
                     A.diagonal() = A.diagonal() + time_factor;
-                    applyBC_split_x(A, rhs);
+                    applyBC_split_x(A, rhs, i);
                     data = solve_linear_problem(A, rhs);
                 }
             }
@@ -127,7 +127,7 @@ namespace EqSolver
 
                     SpMatrix A{splitY.LaplaceTerm(j)};
                     A.diagonal() = A.diagonal() + time_factor.matrix();
-                    applyBC_split_y(A,rhs);
+                    applyBC_split_y(A,rhs, j);
                     data = solve_linear_problem(A, rhs);
                 }
             }
@@ -154,20 +154,26 @@ namespace EqSolver
                 return lu.solve(b);
             }
 
-            void applyBC_split_x(SpMatrix &A, RHS_t &b)
+            void applyBC_split_x(SpMatrix &A, RHS_t &b, ptrdiff_t i)
             {
                 A.coeffRef(0, 0) = 1;
                 A.coeffRef(0, 1) = 0;
-                b(0) = 1.0;
+                b(0) = bc.east_west.west_vals[i];
                 ptrdiff_t n = A.outerSize()-1;
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
-                b(n) = 1.0;
+                b(n) = bc.east_west.east_vals[i];
             }
 
-            void applyBC_split_y(SpMatrix &A, RHS_t &b)
+            void applyBC_split_y(SpMatrix &A, RHS_t &b, ptrdiff_t j)
             {
-                applyBC_split_x(A, b);
+                A.coeffRef(0, 0) = 1;
+                A.coeffRef(0, 1) = 0;
+                b(0) = bc.south_north.south_vals[j];
+                ptrdiff_t n = A.outerSize()-1;
+                A.coeffRef(n, n) = 1.0;
+                A.coeffRef(n, n - 1) = 0.0;
+                b(n) = bc.south_north.north_vals[j];
             }
         };
     } // SplittingMethod
