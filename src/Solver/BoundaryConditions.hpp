@@ -10,26 +10,30 @@ namespace EqSolver
     {
         struct BCSouthNorth
         {
-            template<typename Functor>
+            template <typename Functor>
             BCSouthNorth(
                 const BCSouth &south,
                 const BCNorth &north,
                 const Grid::UniformGrid1D &grid,
-                const Functor& functor)
+                const Functor &functor)
                 : south{south}, north{north},
-                  grid{grid}, south_vals(grid.size(), 0.0), north_vals(grid.size(), 0.0)
+                  grid{grid},
+                  south_vals(grid.size(), 0.0),
+                  north_vals(grid.size(), 0.0)
             {
                 for (size_t i = 0; i < grid.size(); ++i)
                 {
-                    south_vals[i] = functor(south.fixed_x, grid[i]);
-                    north_vals[i] = functor(north.fixed_x, grid[i]);
+                    south_vals[i] =
+                        functor(south.fixed_x, grid[i]);
+                    north_vals[i] =
+                        functor(north.fixed_x, grid[i]);
                 }
             }
 
             BCSouth south;
             BCNorth north;
             Grid::UniformGrid1D grid;
-            
+
             std::vector<float_t> south_vals, north_vals;
         };
 
@@ -59,8 +63,8 @@ namespace EqSolver
 
         struct BoundaryConditions
         {
-        template <
-            typename Functor>
+            template <
+                typename Functor>
             BoundaryConditions(
                 const Grid::UniformGrid2D &grid,
                 const Functor &functor)
@@ -77,7 +81,6 @@ namespace EqSolver
 
             BCEastWest east_west;
             BCSouthNorth south_north;
-
         };
     } // ConcreteProblem
 } // EqSolver
