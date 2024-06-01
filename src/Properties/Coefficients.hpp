@@ -24,6 +24,18 @@ namespace EqSolver
 
             template <
                 typename Grid_t,
+                typename Factory_t>
+            Fields(const Grid_t &grid,
+                   const Factory_t &factory)
+                : Fields{grid,
+                         Factory_t::Capacity{},
+                         Factory_t::Conductivity{},
+                         Factory_t::Source{}}
+            {
+            }
+
+            template <
+                typename Grid_t,
                 typename Capacity_t,
                 typename Conductivity_t,
                 typename Source_t>

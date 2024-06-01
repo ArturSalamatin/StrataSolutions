@@ -12,8 +12,8 @@ namespace EqSolver
     {
         struct State2D
         {
-            using State_Container = 
-            Eigen::ArrayXX<float_t>;
+            using State_Container =
+                Eigen::ArrayXX<float_t>;
 
             State2D(
                 const State_Container &cur_state)
@@ -34,6 +34,11 @@ namespace EqSolver
 
             State2D(const State2D &) noexcept = default;
             State2D(State2D &&) noexcept = default;
+
+            float_t operator()(ptrdiff_t i, ptrdiff_t j) const
+            {
+                return cur_state(i, j);
+            }
 
         public:
             State_Container cur_state;

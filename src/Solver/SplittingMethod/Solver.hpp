@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 
 #include <Eigen/Dense>
 #include <Eigen/Core>
@@ -8,6 +9,7 @@
 #include <Eigen/SparseLU>
 
 #include "../../Grid/Defines.h"
+#include "../BoundaryConditions.hpp"
 
 #include "SplitX.hpp"
 #include "SplitY.hpp"
@@ -16,10 +18,12 @@ namespace EqSolver
 {
     namespace SplittingMethod
     {
-        template <typename Grid_t, typename BC_t>
+        template <typename Grid_t>
         struct Solver
         {
-            using Map1D = Eigen::Map<Eigen::ArrayX<float_t>>;
+            using Map1D =
+                Eigen::Map<
+                    Eigen::ArrayX<float_t>>;
 
             using Map1D_Stride =
                 Eigen::Map<
@@ -29,14 +33,12 @@ namespace EqSolver
 
             using RHS_t = Eigen::VectorX<float_t>;
 
-            template <typename ProblemFactory>
+            template <typename ProblemFactory_t>
             Solver(
+                const Grid_t &grid,
                 std::shared_ptr<Properties::Fields>
                     properties,
-                const Grid_t &grid,
-                const BC_t &bc,
-                const State::State2D &state,
-                const ProblemFactory &factory,
+                const ProblemFactory_t &factory,
                 float_t initial_moment = 0.0)
                 : splitX{properties, grid},
                   splitY{properties, grid},
@@ -56,7 +58,8 @@ namespace EqSolver
             {
                 // tau_factor multiplies Delta_u at different time moments,
                 // t and t+tau
-                Eigen::ArrayXX<float_t> tau_factor{factor.DivideByTemporalStep(tau)};
+                Eigen::ArrayXX<float_t> tau_factor{
+                    factor.DivideByTemporalStep(tau)};
                 // solve a set of 1D problems in y-direction, for various x-coords
                 solve_split_x(tau, tau_factor.data());
                 // solve a set of 1D problems in x-direction, for various y-coords
@@ -64,6 +67,28 @@ namespace EqSolver
 
                 time_moments.push_back(time_moments.back() + tau);
                 states.emplace_back(state);
+            }
+
+            struct Solution
+            {
+                Solution(
+                    const std::vector<float_t> &times,
+                    const std::vector<State::State2D> &states)
+                    : times{times}, states{states}
+                {
+                }
+
+                auto back() const{
+                    return std::pair{times.back(), states.back()};
+                }
+
+                const std::vector<float_t> &times;
+                const std::vector<State::State2D> &states;
+            };
+
+            Solution solution() const
+            {
+                return {time_moments, states};
             }
 
         protected:
@@ -138,7 +163,7 @@ namespace EqSolver
 
             SplitX splitX;
             SplitY splitY;
-            BC_t bc;
+            Problem::BoundaryConditions bc;
             std::shared_ptr<Properties::Fields> properties;
             TemporalTerm factor;
             const Grid_t &grid;

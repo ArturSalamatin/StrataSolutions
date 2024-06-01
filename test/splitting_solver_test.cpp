@@ -31,15 +31,20 @@ TEST(Solver, splitting_method)
   std::shared_ptr<Properties::Fields>
       properties{
           std::make_shared<Properties::Fields>(
-              grid,
-              SimpleProblemFactory::Capacity{},
-              SimpleProblemFactory::Conductivity{},
-              SimpleProblemFactory::Source{})};
+              grid, factory)};
 
   Solver solver{
-    properties, grid, factory.bc, factory.zero_state, factory};
+      grid, properties, factory};
 
-  solver.advance(0.01);
+  solver.advance(1);
+
+  auto [time, state] = solver.solution().back();
+
+  for (ptrdiff_t j = 0; j < (ptrdiff_t)grid.Y_nodes.size(); ++j)
+    for (ptrdiff_t i = 0; i < (ptrdiff_t)grid.X_nodes.size(); ++i)
+    {
+      ASSERT_NEAR(state(i,j), 0.0, tol);
+    }
 }
 
 int main(int argc, char **argv)
