@@ -3,8 +3,6 @@
 #include <vector>
 #include <memory>
 
-// #include <Eigen/Core>
-// #include <Eigen/Dense>
 #include <Eigen/SparseCore>
 
 #include "../../Grid/Defines.h"

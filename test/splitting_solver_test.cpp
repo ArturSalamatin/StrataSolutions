@@ -33,7 +33,7 @@ TEST(Solver, splitting_method)
           std::make_shared<Properties::Fields>(
               grid, factory)};
 
-  Solver solver{
+  Solver<Grid::UniformGrid2D> solver{
       grid, properties, factory};
 
   solver.advance(1);

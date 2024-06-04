@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "../Grid/Defines.h"
 #include "../Grid/UniformGridFactory.hpp"
 #include "../Solver/State2D.hpp"
@@ -15,12 +13,14 @@ namespace EqSolver
     {
         /**
          * @brief Quite simple problem for tests
-         * du/dt - d^2 u/dx^2 - d^2 u/dy^2 = 0
+         * du/dt - d^2 u/dx^2 - d^2 u/dy^2 = 1
          *
          * u(t=0) = 0
          * u(boundary) = 0
+         * 
+         * solution: u = t
          */
-        struct SimpleProblemFactory
+        struct FactoryWithSource
         {
             struct Capacity
             {
@@ -45,14 +45,14 @@ namespace EqSolver
                 float_t operator()(
                     float_t, float_t) const
                 {
-                    return 0.0;
+                    return 1.0;
                 }
             };
 
-            struct BCFunctor : public BoundaryConditions::BCFunctorBase
+            struct BCFunctor
             {
                 float_t operator()(
-                    float_t x, float_t y, float_t t) const override
+                    float_t x, float_t y) const
                 {
                     return 0.0;
                 }
@@ -60,7 +60,7 @@ namespace EqSolver
 
             Problem::InitialCondition
                 zero_state;
-            BoundaryConditions::BoundaryConditions 
+            Problem::BoundaryConditions
                 bc;
 
             SimpleProblemFactory(
@@ -75,7 +75,7 @@ namespace EqSolver
                 : zero_state{
                       State::State2D::FillWithZeros(
                           grid)},
-                  bc{grid, std::make_shared<BCFunctor>()}
+                  bc{grid, BCFunctor{}}
             {
             }
         };

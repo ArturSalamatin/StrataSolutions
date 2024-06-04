@@ -56,6 +56,8 @@ namespace EqSolver
 
             void advance(float_t tau)
             {
+                bc.set_vals(time_moments.back() + tau);
+                
                 // tau_factor multiplies Delta_u at different time moments,
                 // t and t+tau
                 Eigen::ArrayXX<float_t> tau_factor{
@@ -163,7 +165,7 @@ namespace EqSolver
 
             SplitX splitX;
             SplitY splitY;
-            Problem::BoundaryConditions bc;
+            BoundaryConditions::BoundaryConditions bc;
             std::shared_ptr<Properties::Fields> properties;
             TemporalTerm factor;
             const Grid_t &grid;
@@ -187,22 +189,24 @@ namespace EqSolver
             {
                 A.coeffRef(0, 0) = 1;
                 A.coeffRef(0, 1) = 0;
-                b(0) = bc.east_west.west_vals[i];
+                b(0) = bc.west_vals(i);
+
                 ptrdiff_t n = A.outerSize() - 1;
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
-                b(n) = bc.east_west.east_vals[i];
+                b(n) = bc.east_vals(i);
             }
 
             void applyBC_split_y(SpMatrix &A, RHS_t &b, ptrdiff_t j)
             {
                 A.coeffRef(0, 0) = 1;
                 A.coeffRef(0, 1) = 0;
-                b(0) = bc.south_north.south_vals[j];
+                b(0) = bc.south_vals(j);
+
                 ptrdiff_t n = A.outerSize() - 1;
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
-                b(n) = bc.south_north.north_vals[j];
+                b(n) = bc.north_vals(j);
             }
         };
     } // SplittingMethod
