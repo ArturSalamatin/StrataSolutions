@@ -52,12 +52,12 @@ namespace EqSolver
                         conductivity_x_bounds(0, m_id) / gr_x.step(0) * y_vol(0));
                     tripletList.emplace_back(
                         0, 1,
-                        conductivity_x_bounds(1, m_id) / gr_x.step(0) * y_vol(0));
+                        -conductivity_x_bounds(1, m_id) / gr_x.step(0) * y_vol(0));
                     for (ptrdiff_t row = 1; row < ptrdiff_t(matrix.rows()) - 1; ++row)
                     {
                         tripletList.emplace_back(
                             row, row - 1,
-                            conductivity_x_bounds(row, m_id) / gr_x.step(row - 1) * y_vol(row));
+                            -conductivity_x_bounds(row, m_id) / gr_x.step(row - 1) * y_vol(row));
                         tripletList.emplace_back(
                             row, row,
                             (conductivity_x_bounds(row, m_id) / gr_x.step(row - 1) +
@@ -65,12 +65,12 @@ namespace EqSolver
                                 y_vol(row));
                         tripletList.emplace_back(
                             row, row + 1,
-                            conductivity_x_bounds(row + 1, m_id) / gr_x.step(row) * y_vol(row));
+                            -conductivity_x_bounds(row + 1, m_id) / gr_x.step(row) * y_vol(row));
                     }
                     ptrdiff_t end = ptrdiff_t(matrix.rows()) - 1;
                     tripletList.emplace_back(
                         end, end - 1,
-                        conductivity_x_bounds(end, m_id) / gr_x.step(end) * y_vol(end));
+                        -conductivity_x_bounds(end, m_id) / gr_x.step(end) * y_vol(end));
                     tripletList.emplace_back(
                         end, end,
                         conductivity_x_bounds(end + 1, m_id) / gr_x.step(end) * y_vol(end));
