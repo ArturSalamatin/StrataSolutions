@@ -39,6 +39,11 @@ namespace EqSolver
             {
                 return cur_state(i, j);
             }
+            
+            float_t& operator()(ptrdiff_t i, ptrdiff_t j) 
+            {
+                return cur_state(i, j);
+            }
 
         public:
             State_Container cur_state;
