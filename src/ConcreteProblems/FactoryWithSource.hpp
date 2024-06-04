@@ -49,33 +49,33 @@ namespace EqSolver
                 }
             };
 
-            struct BCFunctor
+            struct BCFunctor : public BoundaryConditions::BCFunctorBase
             {
                 float_t operator()(
-                    float_t x, float_t y) const
+                    float_t, float_t, float_t t) const override
                 {
-                    return 0.0;
+                    return t;
                 }
             };
 
             Problem::InitialCondition
                 zero_state;
-            Problem::BoundaryConditions
+            BoundaryConditions::BoundaryConditions
                 bc;
 
-            SimpleProblemFactory(
+            FactoryWithSource(
                 const Box &box, const Steps &steps)
-                : SimpleProblemFactory{
+                : FactoryWithSource{
                       GridFactory::CreateGridFromStep(box, steps)}
             {
             }
 
             template <typename Grid_t>
-            SimpleProblemFactory(const Grid_t &grid)
+            FactoryWithSource(const Grid_t &grid)
                 : zero_state{
                       State::State2D::FillWithZeros(
                           grid)},
-                  bc{grid, BCFunctor{}}
+                  bc{grid, std::make_shared<BCFunctor>()}
             {
             }
         };
