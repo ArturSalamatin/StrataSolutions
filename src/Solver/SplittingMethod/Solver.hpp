@@ -52,19 +52,23 @@ namespace EqSolver
             {
                 time_moments.push_back(initial_moment);
                 states.emplace_back(state);
+                
             }
 
             void advance(float_t tau)
             {
-                bc.set_vals(time_moments.back() + tau);
-                
                 // tau_factor multiplies Delta_u at different time moments,
                 // t and t+tau
                 Eigen::ArrayXX<float_t> tau_factor{
                     factor.DivideByTemporalStep(tau)};
+
                 // solve a set of 1D problems in y-direction, for various x-coords
+                bc.set_vals(time_moments.back() + tau/2.0);
+                
                 solve_split_x(tau, tau_factor.data());
+
                 // solve a set of 1D problems in x-direction, for various y-coords
+                bc.set_vals(time_moments.back() + tau);
                 solve_split_y(tau, tau_factor.data());
 
                 time_moments.push_back(time_moments.back() + tau);
@@ -80,7 +84,8 @@ namespace EqSolver
                 {
                 }
 
-                auto back() const{
+                auto back() const
+                {
                     return std::pair{times.back(), states.back()};
                 }
 
@@ -103,7 +108,7 @@ namespace EqSolver
                 // to be provided to Eigen::Map
                 Eigen::OuterStride<Eigen::Dynamic> stride{stride_size};
 
-#pragma omp parallel for
+#pragma omp parallel for num_threads(16) schedule(dynamic)
                 //  take every line along x-direction. A line per y-node
                 for (ptrdiff_t i = 0; i < (ptrdiff_t)grid.X_nodes.size(); ++i)
                 {
@@ -126,11 +131,12 @@ namespace EqSolver
                     SpMatrix A{splitX.LaplaceTerm(i)};
                     A.diagonal() = A.diagonal() + time_factor;
                     applyBC_split_x(A, rhs, i);
+
                     data = solve_linear_problem(A, rhs);
                 }
             }
 
-            void solve_split_y(float_t tau, float_t *tau_factor)
+             void solve_split_y(float_t tau, float_t *tau_factor)
             {
 #pragma omp parallel for
                 // take every line along x-direction. A line per y-node
@@ -148,7 +154,7 @@ namespace EqSolver
                             state.cur_state.data() + grid.X_nodes.size() * j,
                             (ptrdiff_t)grid.X_nodes.size()};
 
-                    auto source =
+                    const auto source =
                         Map1D{
                             properties->source_vol_f.data() + grid.X_nodes.size() * j,
                             (ptrdiff_t)grid.X_nodes.size()};
@@ -162,7 +168,7 @@ namespace EqSolver
                     data = solve_linear_problem(A, rhs);
                 }
             }
-
+           
             SplitX splitX;
             SplitY splitY;
             BoundaryConditions::BoundaryConditions bc;
@@ -174,13 +180,16 @@ namespace EqSolver
             std::vector<float_t> time_moments;
 
         protected:
+        
+                Eigen::SparseLU<SpMatrix> lu;
+
             Eigen::VectorXd solve_linear_problem(
                 const SpMatrix &A,
                 const Eigen::VectorX<float_t> &b)
             {
                 // A.makeCompressed();
-                Eigen::SparseLU<SpMatrix> lu;
-                lu.analyzePattern(A); // this is common for every matrix A. Can be optimized
+               Eigen::SparseLU<SpMatrix> lu;
+               lu.analyzePattern(A); // this is common for every matrix A. Can be optimized
                 lu.factorize(A);
                 return lu.solve(b);
             }
@@ -195,6 +204,8 @@ namespace EqSolver
                 A.coeffRef(n, n) = 1.0;
                 A.coeffRef(n, n - 1) = 0.0;
                 b(n) = bc.east_vals(i);
+
+
             }
 
             void applyBC_split_y(SpMatrix &A, RHS_t &b, ptrdiff_t j)

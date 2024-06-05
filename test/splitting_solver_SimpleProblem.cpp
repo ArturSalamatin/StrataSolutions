@@ -10,6 +10,7 @@
 #include <src/Grid/UniformGridFactory.hpp>
 
 #include <src/ConcreteProblems/SimpleProblemFactory.hpp>
+#include <src/ConcreteProblems/FactoryWithSource.hpp>
 
 using namespace EqSolver;
 using namespace EqSolver::Grid;
@@ -17,7 +18,7 @@ using namespace EqSolver::Properties;
 using namespace EqSolver::ConcreteProblem;
 using namespace EqSolver::SplittingMethod;
 
-TEST(Solver, splitting_method)
+TEST(Solver, splitting_method_homogeneous)
 {
   const double tol = 1E-8;
 
@@ -43,7 +44,7 @@ TEST(Solver, splitting_method)
   for (ptrdiff_t j = 0; j < (ptrdiff_t)grid.Y_nodes.size(); ++j)
     for (ptrdiff_t i = 0; i < (ptrdiff_t)grid.X_nodes.size(); ++i)
     {
-      ASSERT_NEAR(state(i,j), 0.0, tol);
+      ASSERT_NEAR(state(i, j), 0.0, tol);
     }
 }
 
