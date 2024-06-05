@@ -31,6 +31,24 @@ namespace EqSolver
 
                 return {cur_state};
             }
+            
+            template<typename Functor>
+            static State2D FillWithFunctor(
+                const Grid::UniformGrid2D &grid, const Functor& f, float_t initial_moment)
+            {
+                State_Container cur_state{
+                    grid.X_nodes.size(),
+                    grid.Y_nodes.size()};
+
+                for(ptrdiff_t j = 0; j < cur_state.outerSize(); ++j)
+                for(ptrdiff_t i = 0; i < cur_state.innerSize(); ++i)
+                {
+                    cur_state(i,j) = f(grid.X_nodes[i], grid.Y_nodes[j], initial_moment);
+                }
+
+                return {cur_state};
+            }
+
 
             State2D(const State2D &) noexcept = default;
             State2D(State2D &&) noexcept = default;
